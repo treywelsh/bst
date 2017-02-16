@@ -11,7 +11,7 @@ struct bst_node {
 };
 #define BST_NULL 0
 #define BST_FIRST 1
-#define bst_has_child(n) ((n)->left | (n)->right)
+//#define bst_has_child(n) ((n)->left | (n)->right)
 
 #define bst_node_init(n, value) do{ \
     (n)->val = (value); \
@@ -27,6 +27,7 @@ struct bst {
     uint32_t head_free; /* next node of free list is stored in right child
                                of each tree node. Not obvious,
                                but no extra space required. */
+    struct bst_node * sentinel;
 };
 typedef struct bst bst_t;
 

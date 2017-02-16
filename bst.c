@@ -58,6 +58,7 @@ bst_init(struct bst* b, uint32_t max_len) {
     assert(b != NULL);
     assert(max_len >= 3);
 
+    /* Nodes */
     b->nodes = malloc(sizeof(*(b->nodes)) * (max_len + 1));
     if (b->nodes == NULL) {
         return 1;
@@ -67,7 +68,14 @@ bst_init(struct bst* b, uint32_t max_len) {
     b->nodes_max = max_len;
     b->nodes_count = 0;
 
+    /* Freelist */
     bst_freelist_init(b);
+
+    /* Sentinel */
+    b->sentinel = &b->nodes[0];
+    b->sentinel->left = 0;
+    b->sentinel->right = 0;
+
 
     return 0;
 }
@@ -105,21 +113,18 @@ __bst_find(const struct bst * b, int elm, uint32_t * index, uint32_t * parent_in
     i_prev = BST_NULL;
     i = BST_FIRST;
 
+    b->sentinel->val = elm;
     while (bst_get_node(b, i)->val != elm) {
         node = bst_get_node(b, i);
         i_prev = i;
 
-        if (elm > node->val && node->right != BST_NULL) {
+        if (elm > node->val) {
             i = node->right;
-            continue;
-        } else if (elm < node->val && node->left != BST_NULL) {
+        } else {
             i = node->left;
-            continue;
         }
-
-        /* There is neither left son nor right son,
-         * and current node does not contains the right value
-         */
+    }
+    if (bst_get_node(b, i) == b->sentinel) {
         return NODE_NOT_FOUND;
     }
 
